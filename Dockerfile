@@ -1,12 +1,15 @@
-FROM ubuntu:14.04
+FROM ubuntu
+MAINTAINER nikolai@codefresh.io
 
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
-RUN echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.0.list
+RUN \
+   apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 && \
+   echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list && \
+   apt-get update && \
+   apt-get install -y mongodb-org
 
-RUN apt-get update && apt-get install -y mongodb-org
-
-RUN mkdir -p /data/db
+VOLUME ["/data/db"]
+WORKDIR /data
 
 EXPOSE 27017
 
-ENTRYPOINT ["/usr/bin/mongod"]
+CMD ["mongod"]
